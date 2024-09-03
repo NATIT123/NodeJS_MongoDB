@@ -1,6 +1,8 @@
 ///Read - Write File
 const fs = require("fs");
 const http = require("http");
+const url = require("url");
+const slugs = require("slugify");
 
 /////////FILES
 
@@ -42,29 +44,19 @@ const http = require("http");
 
 ///////TEMPLATE
 
-const replaceTemplate = (cards, product) => {
-  const output = cards.replace(/{%PRODUCT_NAME%}/g, product.productName);
-  output.replace(/{%PRODUCT_IMAGE%}/g, product.image);
-  output.replace(/{%PRODUCT_NUTRIENTS%}/g, product.nutrients);
-  output.replace(/{%PRODUCT_FROM%}/g, product.from);
-  output.replace(/{%PRODUCT_QUANTITY%}/g, product.quantity);
-  output.replace(/{%PRODUCT_PRICE%}/g, product.price);
-  output.replace(/{%PRODUCT_DESCRIPTION%}/g, product.description);
-  if (!product.organic) output.replace(/{%NOT_ORGANIC%}/g, "not-organic");
-  return output;
-};
+const replaceTemplate = require("./modules.js/replaceTemplate");
 
-const templateProduct = fs.readFileSync(
+let templateProduct = fs.readFileSync(
   `${__dirname}/templates/template_product.html`,
   "utf-8"
 );
 
-const templateOverview = fs.readFileSync(
+let templateOverview = fs.readFileSync(
   `${__dirname}/templates/template_overview.html`,
   "utf-8"
 );
 
-const templateCards = fs.readFileSync(
+let templateCards = fs.readFileSync(
   `${__dirname}/templates/template_cards.html`,
   "utf-8"
 );
@@ -73,8 +65,8 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const objectProduct = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
-  const url = req.url;
-  if (url === "/" || url === "/overview") {
+  const { query, pathname } = url.parse(req.url, true);
+  if (pathname === "/" || pathname === "/overview") {
     res.writeHead(200, {
       "Content-type": "text/html",
     });
@@ -82,15 +74,16 @@ const server = http.createServer((req, res) => {
       replaceTemplate(templateCards, el)
     );
     const data = cardsHtml.join("");
-    console.log(data);
 
-    templateOverview.replace(/{%PRODUCT_CARDS%}/g, data);
+    templateOverview = templateOverview.replace(/{%PRODUCTCARDS%}/g, data);
     res.end(templateOverview);
-  } else if (url === "/product") {
+  } else if (pathname === "/product") {
     res.writeHead(200, {
-      "Content-type": "application/json",
+      "Content-type": "text/html",
     });
-    res.end(data);
+    const product = objectProduct[query.id];
+    templateProduct = replaceTemplate(templateProduct, product);
+    res.end(templateProduct);
   } else {
     res.writeHead(404, {
       "Content-type": "text/html",
