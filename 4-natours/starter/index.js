@@ -31,7 +31,10 @@
 ////Routes - stack middleware
 
 const app = require('./app');
-const port = 8080;
+const port = process.env.PORT || 8080;
+
+///Enviroment Variables
+dotenv.config({ path: './config.env' });
 
 app.listen(port, () => {
   console.log(`Listening on Port:${port}`);
