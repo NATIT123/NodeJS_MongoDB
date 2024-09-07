@@ -31,6 +31,7 @@
 ////Routes - stack middleware
 
 const app = require('./app');
+const dotenv = require('dotenv');
 const port = process.env.PORT || 8080;
 
 ///Enviroment Variables
