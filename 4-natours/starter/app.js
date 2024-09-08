@@ -1,6 +1,8 @@
 const express = require('express');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
+const AppError = require('./utils/appError');
+const handleErrorGlobal = require('./controllers/errorController');
 require('./utils/dbConnect');
 
 const app = express();
@@ -30,5 +32,12 @@ app.use((req, res, next) => {
 
 app.use('/api/v1/tours', tourRoute);
 app.use('/api/v1/users', userRoute);
+
+app.all('*', (req, res, next) => {
+  ///Stop all middleware and run immdiatelty to below
+  next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
+});
+
+app.use(handleErrorGlobal);
 
 module.exports = app;

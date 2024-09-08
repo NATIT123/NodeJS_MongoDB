@@ -15,5 +15,6 @@ tourRoute
   .get(tourController.getTour)
   .patch(tourController.updateTour)
   .delete(tourController.deleteTour);
+tourRoute.route('/tour-stats-plan/:year').get(tourController.getMonthlyPlan);
 
 module.exports = tourRoute;
