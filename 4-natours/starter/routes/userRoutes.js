@@ -6,6 +6,9 @@ const authController = require('../controllers/authController');
 userRoute.post('/signUp', authController.signUp);
 userRoute.post('/login', authController.login);
 
+userRoute.post('/forgotPassword', authController.forgotPassword);
+userRoute.patch('/resetPassword/:token', authController.resetPassword);
+
 userRoute
   .route('/')
   .get(userController.getAllUsers)
@@ -14,6 +17,10 @@ userRoute
   .route('/:id')
   .get(userController.getUser)
   .patch(userController.updateUser)
-  .delete(userController.deleteUser);
+  .delete(
+    authController.protect,
+    authController.restrictTo('admin', 'lead-guide'),
+    userController.deleteUser
+  );
 
 module.exports = userRoute;
