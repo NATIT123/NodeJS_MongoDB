@@ -8,6 +8,22 @@ userRoute.post('/login', authController.login);
 
 userRoute.post('/forgotPassword', authController.forgotPassword);
 userRoute.patch('/resetPassword/:token', authController.resetPassword);
+userRoute.patch(
+  '/changePassword/:id',
+  authController.protect,
+  authController.changePassword
+);
+userRoute.patch(
+  '/updateUser/:id',
+  authController.protect,
+  authController.updateUser
+);
+
+userRoute.delete(
+  '/deleteUser/:id',
+  authController.protect,
+  authController.deleteUser
+);
 
 userRoute
   .route('/')

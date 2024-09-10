@@ -6,6 +6,37 @@ const catchAsync = require('../utils/catchAsync');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/nodeMailer');
 
+const filterObj = (obj, ...allowedFileds) => {
+  const newObj = {};
+  Object.keys(obj).forEach((el) => {
+    if (allowedFileds.includes(el)) newObj[el] = obj[el];
+  });
+  return newObj;
+};
+
+const createSendToken = (user, statusCode, res) => {
+  const token = signInToken(user._id);
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+  res.cookie('jwt', token, cookieOptions);
+
+  user.password = undefined;
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user: user,
+    },
+  });
+};
+
 const signInToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECERT, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -15,15 +46,7 @@ const signInToken = (id) => {
 exports.signUp = catchAsync(async (req, res, next) => {
   const newUser = await User.create(req.body);
 
-  const token = signInToken(newUser._id);
-
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  createSendToken(newUser, 201, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -40,12 +63,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect email and password', 401));
   }
 
-  const token = signInToken(user._id);
-
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  createSendToken(user, 200, res);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -67,7 +85,6 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   //Verification token
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECERT);
-  console.log(decoded);
 
   ///Check if users is exist
   const freshUser = await User.findById(decoded.id);
@@ -168,10 +185,58 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   //update changePasswordAt property for the user
 
   ///Log the user in, send JWT
-  const token = signInToken(user._id);
+  createSendToken(user, 201, res);
+});
+
+exports.changePassword = catchAsync(async (req, res, next) => {
+  ///Get user from collection
+  const user = await User.findById(req.params.id).select('+password');
+
+  ///Check if POSTED current password is correct
+  const correct = await user.correctPassword(req.body.password, user.password);
+  if (!correct) {
+    return next(new AppError('Your current password is wrong', 401));
+  }
+
+  ///If so, update password
+  user.password = req.body.newPassword;
+  user.confirmPassword = req.body.confirmPassword;
+  await user.save();
+
+  ////Log user in,send JWT
+  createSendToken(user, 201, res);
+});
+
+exports.updateUser = catchAsync(async (req, res, next) => {
+  ////11Crate Error if user POSTs password data
+  if (req.body.password || req.body.confirmPassword) {
+    return next(
+      new AppError(
+        'This route is not for password updates. Please use /changePassword.',
+        400
+      )
+    );
+  }
+
+  ///Update user document
+  ///Filter out unwanted fields names that are not allowed to be updated
+  const filterBody = filterObj(req.body, 'name', 'email');
+  const updateUser = await User.findByIdAndUpdate(req.user.id, filterBody, {
+    new: true,
+    runValidators: true,
+  });
 
   res.status(200).json({
     status: 'success',
-    token,
+    user: updateUser,
+  });
+});
+
+exports.deleteUser = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+
+  res.status(200).json({
+    status: 'success',
+    user: null,
   });
 });

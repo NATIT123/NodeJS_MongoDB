@@ -52,7 +52,37 @@ const tourSchema = new mongoose.Schema({
     default: Date.now(),
   },
   startDates: [Date],
-});
+  secretTour: {
+    type: Boolean,
+    default: false,
+  },
 
+  startLocation: {
+    ///GeoJson
+    type: {
+      type: String,
+      default: 'Point',
+      enum: ['Point'],
+    },
+    coordinates: [Number],
+    address: String,
+    description: String,
+  },
+
+  locations: [
+    {
+      _id: String,
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+      day: Number,
+    },
+  ],
+});
 const Tour = mongoose.model('Tour', tourSchema);
 module.exports = Tour;
