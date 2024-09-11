@@ -8,22 +8,16 @@ userRoute.post('/login', authController.login);
 
 userRoute.post('/forgotPassword', authController.forgotPassword);
 userRoute.patch('/resetPassword/:token', authController.resetPassword);
-userRoute.patch(
-  '/changePassword/:id',
-  authController.protect,
-  authController.changePassword
-);
-userRoute.patch(
-  '/updateUser/:id',
-  authController.protect,
-  authController.updateUser
-);
 
-userRoute.delete(
-  '/deleteUser/:id',
-  authController.protect,
-  authController.deleteUser
-);
+// Protect all routes after this middleware
+userRoute.use(authController.protect);
+
+userRoute.patch('/updateMyPassword', authController.changePassword);
+userRoute.get('/me', userController.getMe, userController.getUser);
+userRoute.patch('/updateMe', userController.updateMe);
+userRoute.delete('/deleteMe', userController.deleteMe);
+
+userRoute.use(authController.restrictTo('admin'));
 
 userRoute
   .route('/')

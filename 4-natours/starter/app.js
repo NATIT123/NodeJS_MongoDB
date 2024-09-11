@@ -7,6 +7,7 @@ const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
 const xss = require('xss-clean');
+const helmet = require('helmet');
 const handleErrorGlobal = require('./controllers/errorController');
 require('./utils/dbConnect');
 
@@ -45,6 +46,7 @@ app.use(express.static(`${__dirname}/public`));
 
 const tourRoute = require('./routes/tourRoutes');
 const userRoute = require('./routes/userRoutes');
+const reviewRoute = require('./routes/reviewRoutes');
 
 //Middlewares
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
@@ -61,6 +63,7 @@ app.use((req, res, next) => {
 
 app.use('/api/v1/tours', tourRoute);
 app.use('/api/v1/users', userRoute);
+app.use('/api/v1/reviews', reviewRoute);
 
 app.all('*', (req, res, next) => {
   ///Stop all middleware and run immdiatelty to below
