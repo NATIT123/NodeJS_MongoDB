@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const AppError = require('./utils/appError');
@@ -9,9 +10,20 @@ const hpp = require('hpp');
 const xss = require('xss-clean');
 const helmet = require('helmet');
 const handleErrorGlobal = require('./controllers/errorController');
+const tourRoute = require('./routes/tourRoutes');
+const userRoute = require('./routes/userRoutes');
+const reviewRoute = require('./routes/reviewRoutes');
+const viewRoute = require('./routes/viewRoutes');
 require('./utils/dbConnect');
 
 const app = express();
+
+///Set up views Pug
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
+///Static Files
+app.use(express.static(path.join(__dirname, 'public')));
 
 ///Limit requests from same API
 const limiter = rateLimit({
@@ -41,12 +53,19 @@ app.use(hpp());
 ///Enviroment Variables
 dotenv.config({ path: './config.env' });
 
-///Static Files
-app.use(express.static(`${__dirname}/public`));
-
-const tourRoute = require('./routes/tourRoutes');
-const userRoute = require('./routes/userRoutes');
-const reviewRoute = require('./routes/reviewRoutes');
+// Prevent parameter pollution
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
+  })
+);
 
 //Middlewares
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
@@ -58,9 +77,13 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
   req.request = new Date().toISOString();
+  console.log(req.cookies);
   next();
 });
 
+////Routes
+
+app.use('/', viewRoute);
 app.use('/api/v1/tours', tourRoute);
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/reviews', reviewRoute);

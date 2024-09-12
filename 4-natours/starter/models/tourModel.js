@@ -133,31 +133,46 @@ tourSchema.pre('save', function (next) {
 //   next();
 // });
 
-tourSchema.pre(/^find/, function (next) {
-  this.find({ secretTour: { $ne: true } });
+// tourSchema.pre(/^find/, function (next) {
+//   this.find({ secretTour: { $ne: true } });
 
-  this.start = Date.now();
-});
+//   this.start = Date.now();
+//   next();
+// });
 
-tourSchema.post(/^find/, function (docs, next) {
-  console.log(`Query took ${Date.now() - this.start} milliseconds `);
-  next();
-});
+// tourSchema.pre(/^find/, function (next) {
+//   this.populate({
+//     path: 'guides',
+//     select: '-__v -passwordChangedAt',
+//   });
 
-////Show value tour query populate
-tourSchema.virtual('reviewss', {
-  ref: 'Review',
-  foreignField: 'tour',
-  localField: '_id',
-});
+//   next();
+// });
 
-///Aggreation middleware
-tourSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+// tourSchema.post(/^find/, function (docs, next) {
+//   console.log(`Query took ${Date.now() - this.start} milliseconds `);
+//   next();
+// });
 
-  console.log(this.pipeline());
-  next();
-});
+// ///
+// tourSchema.index({ price: 1, ratingsAverage: -1 });
+// tourSchema.index({ slug: 1 });
+// tourSchema.index({ startLocation: '2dsphere' });
+
+// ////Show value tour query populate
+// tourSchema.virtual('reviewss', {
+//   ref: 'Review',
+//   foreignField: 'tour',
+//   localField: '_id',
+// });
+
+// ///Aggreation middleware
+// tourSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+
+//   console.log(this.pipeline());
+//   next();
+// });
 
 const Tour = mongoose.model('Tour', tourSchema);
 module.exports = Tour;
