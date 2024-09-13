@@ -51,18 +51,21 @@ exports.signUp = catchAsync(async (req, res, next) => {
 
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
-  ////Check if email and password exist
+
+  // 1) Check if email and password exist
   if (!email || !password) {
-    return next(new AppError('Please provide email and password', 400));
+    return next(new AppError('Please provide email and password!', 400));
   }
-  ///Check if email and password is not correct
+  // 2) Check if user exists && password is correct
   const user = await User.findOne({ email }).select('+password');
-  const correct = await user.correctPassword(password, user.password);
 
-  if (!user || !correct) {
-    return next(new AppError('Incorrect email and password', 401));
-  }
+  console.log(user);
 
+  // if (!user || !(await user.correctPassword(password, user.password))) {
+  //   return next(new AppError('Incorrect email or password', 401));
+  // }
+
+  // 3) If everything ok, send token to client
   createSendToken(user, 200, res);
 });
 
@@ -74,6 +77,8 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
   console.log(token);
 
@@ -101,6 +106,33 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   ///Grant access to protected route
   req.user = freshUser;
+  next();
+});
+
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  if (req.cookies.jwt) {
+    //Verification token
+    const decoded = await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.JWT_SECERT
+    );
+
+    ///Check if users is exist
+    const freshUser = await User.findById(decoded.id);
+    if (!freshUser) {
+      return next();
+    }
+
+    ///Check if user changed password after the token was issued
+    if (freshUser.changePasswordAfter(decoded.iat)) {
+      return next();
+    }
+    ///Grant access to protected route
+    res.locals.user = freshUser;
+    // req.user = freshUser;
+    return next();
+  }
+
   next();
 });
 

@@ -14,9 +14,9 @@ const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf-8'));
 ///Import data into DB
 const importData = async () => {
   try {
-    await tour.create(tours);
+    await tour.create(tours, { validateBeforeSave: false });
     await review.create(reviews, { validateBeforeSave: false });
-    await user.create(users);
+    await user.create(users, { validateBeforeSave: false });
     console.log('Load DB successfully');
   } catch (err) {
     console.log(err);

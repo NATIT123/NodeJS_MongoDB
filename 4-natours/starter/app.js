@@ -35,7 +35,11 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 //Set security HTTP headers
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
 
 //Body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));

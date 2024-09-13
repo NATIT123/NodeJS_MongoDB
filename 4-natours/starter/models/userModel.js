@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 const validataor = require('validator');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 //name,email,photo,password,confirm Password
 
@@ -85,8 +85,11 @@ userSchema.pre(/^find/, function (next) {
   next();
 });
 
-userSchema.methods.correctPassword = async function (password, hashPassowrd) {
-  return await bcrypt.compare(password, hashPassowrd);
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
 };
 
 userSchema.methods.changePasswordAfter = function (JWTTimestamp) {
