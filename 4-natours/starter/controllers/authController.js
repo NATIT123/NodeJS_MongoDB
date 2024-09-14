@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const jwt = require('jsonwebtoken');
-const sendEmail = require('../utils/nodeMailer');
+const sendEmail = require('../utils/email');
 
 const filterObj = (obj, ...allowedFileds) => {
   const newObj = {};
