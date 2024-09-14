@@ -37,6 +37,16 @@ const createSendToken = (user, statusCode, res) => {
   });
 };
 
+exports.logout = (req, res) => {
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({
+    status: 'success',
+  });
+};
+
 const signInToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECERT, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -59,11 +69,11 @@ exports.login = catchAsync(async (req, res, next) => {
   // 2) Check if user exists && password is correct
   const user = await User.findOne({ email }).select('+password');
 
-  console.log(user);
+  console.log(await user.correctPassword(password, user.password));
 
-  // if (!user || !(await user.correctPassword(password, user.password))) {
-  //   return next(new AppError('Incorrect email or password', 401));
-  // }
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    return next(new AppError('Incorrect email or password', 401));
+  }
 
   // 3) If everything ok, send token to client
   createSendToken(user, 200, res);
@@ -106,6 +116,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   ///Grant access to protected route
   req.user = freshUser;
+  res.locals.user = freshUser;
   next();
 });
 
