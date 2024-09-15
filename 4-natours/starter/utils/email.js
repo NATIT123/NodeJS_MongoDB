@@ -1,37 +1,6 @@
-const nodeMailer = require('nodemailer');
-
-const sendEmail = async (options) => {
-  ////Create a transporter
-  const transporter = nodeMailer.createTransport({
-    service: 'Gmail',
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secure: false,
-    auth: {
-      user: process.env.EMAIL_USERNAME,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-
-    ///Active in gmail "less secure app" options
-  });
-
-  //Define the email options
-  const mailOptions = {
-    from: 'tuosama1234@gmail.com',
-    to: options.email,
-    subject: options.subject,
-    text: options.message,
-  };
-
-  //Actually send the email
-  await transporter.sendMail(mailOptions);
-};
-
-module.exports = sendEmail;
-
 const nodemailer = require('nodemailer');
 const pug = require('pug');
-const htmlToText = require('html-to-text');
+const { htmlToText } = require('html-to-text');
 
 module.exports = class Email {
   constructor(user, url) {
@@ -56,6 +25,8 @@ module.exports = class Email {
     return nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
+      service: 'Gmail',
+      secure: false,
       auth: {
         user: process.env.EMAIL_USERNAME,
         pass: process.env.EMAIL_PASSWORD,
@@ -78,7 +49,7 @@ module.exports = class Email {
       to: this.to,
       subject,
       html,
-      text: htmlToText.fromString(html),
+      text: htmlToText(html),
     };
 
     // 3) Create a transport and send email

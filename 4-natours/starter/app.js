@@ -14,6 +14,7 @@ const tourRoute = require('./routes/tourRoutes');
 const userRoute = require('./routes/userRoutes');
 const reviewRoute = require('./routes/reviewRoutes');
 const viewRoute = require('./routes/viewRoutes');
+const bookingRoute = require('./routes/bookingRoutes');
 require('./utils/dbConnect');
 
 const app = express();
@@ -91,6 +92,7 @@ app.use('/', viewRoute);
 app.use('/api/v1/tours', tourRoute);
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/reviews', reviewRoute);
+app.use('/api/v1/bookings', bookingRoute);
 
 app.all('*', (req, res, next) => {
   ///Stop all middleware and run immdiatelty to below
