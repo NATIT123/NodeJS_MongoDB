@@ -1,0 +1,352 @@
+aggregate([$lookup:{from:'(db_name reference),localField:'db_name',foreignField:'_id']
+
+$match the same as find() :syntax:db.collection.aggregate([{$match:{gender:"female"}}]
+$sort sort document:{$sort:{totalPerson:-1}} -1:desc,1:asc
+
+
+$group the same as group by in sql
+if _id is a properties nested in object
+using synxtax:{_id:{state:"$location.state"}}
+
+db.sales.aggregate( [
+  {
+    $group: {
+       _id: null,
+       count: { $count: { } }
+    }
+  }
+] ):SELECT COUNT(*) AS count FROM sales
+
+
+db.sales.aggregate(
+  [
+    // First Stage
+    {
+      $group :
+        {
+          _id : "$item",
+          totalSaleAmount: { $sum: { $multiply: [ "$price", "$quantity" ] } }
+        }
+     },
+     // Second Stage
+     {
+       $match: { "totalSaleAmount": { $gte: 100 } }
+     }
+   ]
+ ):SELECT item,
+   Sum(( price * quantity )) AS totalSaleAmount
+FROM   sales
+GROUP  BY item
+HAVING totalSaleAmount >= 100
+
+
+db.sales.aggregate([
+  // First Stage
+  {
+    $match : { "date": { $gte: new ISODate("2014-01-01"), $lt: new ISODate("2015-01-01") } }
+  },
+  // Second Stage
+  {
+    $group : {
+       _id : { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+       totalSaleAmount: { $sum: { $multiply: [ "$price", "$quantity" ] } },
+       averageQuantity: { $avg: "$quantity" },
+       count: { $sum: 1 }
+    }
+  },
+  // Third Stage
+  {
+    $sort : { totalSaleAmount: -1 }
+  }
+ ]):SELECT date,
+       Sum(( price * quantity )) AS totalSaleAmount,
+       Avg(quantity)             AS averageQuantity,
+       Count(*)                  AS Count
+FROM   sales
+WHERE  date >= '01/01/2014' AND date < '01/01/2015'
+GROUP  BY date
+ORDER  BY totalSaleAmount DESC
+
+
+db.sales.aggregate([
+  {
+    $group : {
+       _id : null,
+       totalSaleAmount: { $sum: { $multiply: [ "$price", "$quantity" ] } },
+       averageQuantity: { $avg: "$quantity" },
+       count: { $sum: 1 }
+    }
+  }
+ ]):SELECT Sum(price * quantity) AS totalSaleAmount,
+       Avg(quantity)         AS averageQuantity,
+       Count(*)              AS Count
+FROM   sales
+
+
+
+db.books.aggregate([
+   { $group : { _id : "$author", books: { $push: "$title" } } }
+ ]):{ "_id" : "Homer", "books" : [ "The Odyssey", "Iliad" ] }
+{ "_id" : "Dante", "books" : [ "The Banquet", "Divine Comedy", "Eclogues" ] }
+
+
+
+
+
+uses the $$ROOT system variable to group the entire documents by authors
+
+db.books.aggregate([
+   // First Stage
+   {
+     $group : { _id : "$author", books: { $push: "$$ROOT" } }
+   },
+   // Second Stage
+   {
+     $addFields:
+       {
+         totalCopies : { $sum: "$books.copies" }
+       }
+   }
+ ])  
+
+Result:{ "_id" : "Homer",
+  "books" :
+    [
+       { "_id" : 7000, "title" : "The Odyssey", "author" : "Homer", "copies" : 10 },
+       { "_id" : 7020, "title" : "Iliad", "author" : "Homer", "copies" : 10 }
+    ]
+ },
+ { "_id" : "Dante",
+   "books" :
+     [
+       { "_id" : 8751, "title" : "The Banquet", "author" : "Dante", "copies" : 2 },
+       { "_id" : 8752, "title" : "Divine Comedy", "author" : "Dante", "copies" : 1 },
+       { "_id" : 8645, "title" : "Eclogues", "author" : "Dante", "copies" : 2 }
+     ]
+ }
+
+
+$addFields adds a field to the output containing the total copies of books for each author.
+{
+  "_id" : "Homer",
+  "books" :
+     [
+       { "_id" : 7000, "title" : "The Odyssey", "author" : "Homer", "copies" : 10 },
+       { "_id" : 7020, "title" : "Iliad", "author" : "Homer", "copies" : 10 }
+     ],
+   "totalCopies" : 20
+}
+{
+  "_id" : "Dante",
+  "books" :
+     [
+       { "_id" : 8751, "title" : "The Banquet", "author" : "Dante", "copies" : 2 },
+       { "_id" : 8752, "title" : "Divine Comedy", "author" : "Dante", "copies" : 1 },
+       { "_id" : 8645, "title" : "Eclogues", "author" : "Dante", "copies" : 2 }
+     ],
+   "totalCopies" : 5
+}
+
+
+
+///Project
+
+db.books.aggregate( [
+   {
+      $project: {
+         title: 1,
+         "author.first": 1,
+         "author.last" : 1,
+         "author.middle": {
+            $cond: {
+               if: { $eq: [ "", "$author.middle" ] },
+               then: "$$REMOVE",
+               else: "$author.middle"
+            }
+         }
+      }
+   }
+] )
+
+{ "_id" : 1, "title" : "abc123", "author" : { "last" : "zzz", "first" : "aaa" } }
+{ "_id" : 2, "title" : "Baked Goods", "author" : { "last" : "xyz", "first" : "abc" } }
+{ "_id" : 3, "title" : "Ice Cream Cakes", "author" : { "last" : "xyz", "first" : "abc", "middle" : "mmm" } }
+
+
+
+{
+  "_id" : 1,
+  title: "abc123",
+  isbn: "0001122223334",
+  author: { last: "zzz", first: "aaa" },
+  copies: 5
+}
+
+db.books.aggregate(
+   [
+      {
+         $project: {
+            title: 1,
+            isbn: {
+               prefix: { $substr: [ "$isbn", 0, 3 ] },
+               group: { $substr: [ "$isbn", 3, 2 ] },
+               publisher: { $substr: [ "$isbn", 5, 4 ] },
+               title: { $substr: [ "$isbn", 9, 3 ] },
+               checkDigit: { $substr: [ "$isbn", 12, 1] }
+            },
+            lastName: "$author.last",
+            copiesSold: "$copies"
+         }
+      }
+   ]
+)
+
+
+{
+   "_id" : 1,
+   "title" : "abc123",
+   "isbn" : {
+      "prefix" : "000",
+      "group" : "11",
+      "publisher" : "2222",
+      "title" : "333",
+      "checkDigit" : "4"
+   },
+   "lastName" : "zzz",
+   "copiesSold" : 5
+}
+
+{$convert:{input:'$dob.date',to:'date'}}
+
+
+
+db.persons.aggregate([
+    {
+      $project: {
+        _id: 0,
+        name: 1,
+        email: 1,
+        birthdate: { $convert: { input: '$dob.date', to: 'date' } }, $toDate:
+        age: "$dob.age",
+        location: {
+          type: 'Point',
+          coordinates: [
+            {
+              $convert: {
+                input: '$location.coordinates.longitude',
+                to: 'double',
+                onError: 0.0,
+                onNull: 0.0
+              }
+            },
+            {
+              $convert: {
+                input: '$location.coordinates.latitude',
+                to: 'double',
+                onError: 0.0,
+                onNull: 0.0
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      $project: {
+        gender: 1,
+        email: 1,
+        location: 1,
+        birthdate: 1,
+        age: 1,
+        fullName: {
+          $concat: [
+            { $toUpper: { $substrCP: ['$name.first', 0, 1] } },
+            {
+              $substrCP: [
+                '$name.first',
+                1,
+                { $subtract: [{ $strLenCP: '$name.first' }, 1] }
+              ]
+            },
+            ' ',
+            { $toUpper: { $substrCP: ['$name.last', 0, 1] } },
+            {
+              $substrCP: [
+                '$name.last',
+                1,
+                { $subtract: [{ $strLenCP: '$name.last' }, 1] }
+              ]
+            }
+          ]
+        }
+      }
+    },
+  { $group: { _id: { birthYear: { $isoWeekYear: "$birthdate" } }, numPersons: { $sum: 1 } } },
+    { $sort: { numPersons: -1 } }
+  ]).pretty();
+
+
+Deconstructs an array field from the input documents to output a document for each element.
+Each output document is the input document with the value of the array field replaced by the element.
+$unwind:"$sizes"
+
+A=[1,2,3]
+A1,A2,A3
+db.inventory.insertOne({ "_id" : 1, "item" : "ABC1", sizes: [ "S", "M", "L"] })
+db.inventory.aggregate( [ { $unwind : "$sizes" } ] )
+
+
+The following $unwind operation uses the preserveNullAndEmptyArrays option
+to include documents whose sizes field is null, missing, or an empty array.
+
+db.inventory2.aggregate( [
+   { $unwind: { path: "$sizes", preserveNullAndEmptyArrays: true } }
+] )
+
+{ "_id" : 1, "item" : "ABC", "price" : NumberDecimal("80"), "sizes" : "S" }
+{ "_id" : 1, "item" : "ABC", "price" : NumberDecimal("80"), "sizes" : "M" }
+{ "_id" : 1, "item" : "ABC", "price" : NumberDecimal("80"), "sizes" : "L" }
+{ "_id" : 2, "item" : "EFG", "price" : NumberDecimal("120") }
+{ "_id" : 3, "item" : "IJK", "price" : NumberDecimal("160"), "sizes" : "M" }
+{ "_id" : 4, "item" : "LMN", "price" : NumberDecimal("10") }
+{ "_id" : 5, "item" : "XYZ", "price" : NumberDecimal("5.75"), "sizes" : null }
+
+{$addToSet}
+
+
+$slice:return numbers of elements 
+
+$size:return size of array 
+
+{
+    $filter:
+      {
+         input: <array>,
+         as: <string>,
+         cond: <expression>,
+         limit: <number expression>
+      }
+}
+
+db.friends.aggregate([
+    {
+      $project: {
+        _id: 0,
+        scores: { $filter: { input: '$examScores', as: 'sc', cond: { $gt: ["$$sc.score", 60] } } }
+      }
+    }
+  ]).pretty();
+
+
+db.friends.aggregate([
+    { $unwind: "$examScores" },
+    { $project: { _id: 1, name: 1, age: 1, score: "$examScores.score" } },
+    { $sort: { score: -1 } },
+    { $group: { _id: "$_id", name: { $first: "$name" }, maxScore: { $max: "$score" } } },
+    { $sort: { maxScore: -1 } }
+  ]).pretty();
+
+
+
+
+
