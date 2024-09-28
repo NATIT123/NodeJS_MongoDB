@@ -347,6 +347,87 @@ db.friends.aggregate([
   ]).pretty();
 
 
+//////////////$bucket
+db.persons
+  .aggregate([
+    {
+      $bucket: {
+        groupBy: '$dob.age',
+        boundaries: [18, 30, 40, 50, 60, 120],
+        output: {
+          numPersons: { $sum: 1 },
+          averageAge: { $avg: '$dob.age' }
+        }
+      }
+    }
+  ])
+  .pretty();
+
+db.persons.aggregate([
+    {
+      $bucketAuto: {
+        groupBy: '$dob.age',
+        buckets: 5,
+        output: {
+          numPersons: { $sum: 1 },
+          averageAge: { $avg: '$dob.age' }
+        }
+      }
+    }
+  ]).pretty();
+
+
+db.artists.aggregate( [
+  // First Stage
+  {
+    $bucket: {
+      groupBy: "$year_born",                        // Field to group by
+      boundaries: [ 1840, 1850, 1860, 1870, 1880 ], // Boundaries for the buckets
+      default: "Other",                             // Bucket ID for documents which do not fall into a bucket
+      output: {                                     // Output for each bucket
+        "count": { $sum: 1 },
+        "artists" :
+          {
+            $push: {
+              "name": { $concat: [ "$first_name", " ", "$last_name"] },
+              "year_born": "$year_born"
+            }
+          }
+      }
+    }
+  },
+  // Second Stage
+  {
+    $match: { count: {$gt: 3} }
+  }
+] )
+
+
+//First Stage
+{ "_id" : 1840, "count" : 1, "artists" : [ { "name" : "Odilon Redon", "year_born" : 1840 } ] }
+{ "_id" : 1850, "count" : 2, "artists" : [ { "name" : "Vincent Van Gogh", "year_born" : 1853 },
+                                           { "name" : "Edvard Diriks", "year_born" : 1855 } ] }
+{ "_id" : 1860, "count" : 4, "artists" : [ { "name" : "Emil Bernard", "year_born" : 1868 },
+                                           { "name" : "Joszef Rippl-Ronai", "year_born" : 1861 },
+                                           { "name" : "Alfred Maurer", "year_born" : 1868 },
+                                           { "name" : "Edvard Munch", "year_born" : 1863 } ] }
+{ "_id" : 1870, "count" : 1, "artists" : [ { "name" : "Anna Ostroumova", "year_born" : 1871 } ] }
+
+
+
+//Second Stage
+
+{ "_id" : 1860, "count" : 4, "artists" :
+  [
+    { "name" : "Emil Bernard", "year_born" : 1868 },
+    { "name" : "Joszef Rippl-Ronai", "year_born" : 1861 },
+    { "name" : "Alfred Maurer", "year_born" : 1868 },
+    { "name" : "Edvard Munch", "year_born" : 1863 }
+  ]
+}
+
+
+
 
 
 
