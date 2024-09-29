@@ -1,12 +1,10 @@
-const mongodb = require("mongodb").MongoClient;
-mongodb
+const mongoose = require("mongoose");
+mongoose
   .connect("mongodb://127.0.0.1:27017/persons", {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
   })
-  .then((client) => {
+  .then(() => {
     console.log("Connected!");
-    client.close();
   })
   .catch((err) => {
     console.log(err);
