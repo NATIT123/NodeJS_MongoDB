@@ -7,7 +7,7 @@ class ProductsPage extends Component {
   state = { isLoading: true, products: [] };
   componentDidMount() {
     axios
-      .get("http://localhost:3100/products")
+      .get("http://localhost:3100/products?page=2&limit=4")
       .then((productsResponse) => {
         console.log(productsResponse);
         this.setState({

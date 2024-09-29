@@ -63,7 +63,15 @@ router.get("/", async (req, res, next) => {
   // res.json(resultProducts);
 
   try {
-    const listProduct = await Product.find();
+    let { page, limit } = req.query;
+    console.log(req.query);
+    page = page * 1 || 1;
+    limit = limit * 1 || 100;
+    skip = (page - 1) * limit;
+    const listProduct = await Product.find()
+      .sort({ price: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
     res.status(201).json({ message: "Product added", data: listProduct });
   } catch (err) {
     console.log(err);
