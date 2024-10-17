@@ -19,7 +19,7 @@ const userSchema = new Schema({
     items: [
       {
         productId: {
-          type: Schema.Types.ObjectId,
+          type: mongoose.Schema.Types.ObjectId,
           ref: "Products",
           required: true,
         },
