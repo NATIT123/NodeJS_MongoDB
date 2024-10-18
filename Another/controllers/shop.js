@@ -1,6 +1,6 @@
 const Product = require("../models/product");
 const Order = require("../models/order");
-
+const crypto = require("crypto");
 exports.getProducts = async (req, res, next) => {
   try {
     const products = await Product.find();
