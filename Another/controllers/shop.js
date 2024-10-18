@@ -1,7 +1,15 @@
 const Product = require("../models/product");
 const Order = require("../models/order");
 const crypto = require("crypto");
+const fs = require("fs");
+const path = require("path");
 exports.getProducts = async (req, res, next) => {
+  let message = req.flash("errors");
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
   try {
     const products = await Product.find();
 
@@ -10,6 +18,7 @@ exports.getProducts = async (req, res, next) => {
       pageTitle: "All Products",
       path: "/products",
       isAuthenticated: req.session.isLoggedIn,
+      errorMessage: message,
     });
   } catch (err) {
     console.log(err);
@@ -17,6 +26,12 @@ exports.getProducts = async (req, res, next) => {
 };
 
 exports.getProduct = (req, res, next) => {
+  let message = req.flash("errors");
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
   const prodId = req.params.productId;
   Product.findById(prodId)
     .then((product) => {
@@ -25,6 +40,7 @@ exports.getProduct = (req, res, next) => {
         pageTitle: product.title,
         path: "/products",
         isAuthenticated: req.session.isLoggedIn,
+        errorMessage: message,
       });
     })
     .catch((err) => console.log(err));
@@ -120,4 +136,39 @@ exports.getOrders = (req, res, next) => {
       });
     })
     .catch((err) => console.log(err));
+};
+
+exports.getInvoice = async (req, res, next) => {
+  try {
+    const orderId = req.params.orderId;
+    const isExist = await Order.findById(orderId);
+    if (!isExist) {
+      return next(new Error("No order found"));
+    }
+    if (isExist.user.userId.toString() !== req.user._id.toString()) {
+      return next(new Error("Unauthorized"));
+    }
+    const invoiceName = "invoice-" + orderId + ".pdf";
+    const invoicePath = path.join("data", "invoices", invoiceName);
+    // fs.readFile(invoicePath, (err, data) => {
+    //   if (err) {
+    //     return next(err);
+    //   }
+    //   res.setHeader("Content-type", "application/pdf");
+    //   res.setHeader(
+    //     "Content-Disposition",
+    //     'inline; filename="' + invoiceName + '"'
+    //   );
+    //   res.send(data);
+    // });
+    const file = fs.createReadStream(invoicePath);
+    res.setHeader("Content-type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      'inline; filename="' + invoiceName + '"'
+    );
+    file.pipe(res);
+  } catch (err) {
+    next(err);
+  }
 };

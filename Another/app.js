@@ -12,6 +12,24 @@ const User = require("./models/user");
 
 const errorController = require("./controllers/error");
 
+const multer = require("multer");
+
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "/public/images"));
+  },
+
+  filename: (req, file, cb) => {
+    cb(null, new Date().toISOString().replace(/:/g, "-") + file.originalname);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+    return cb(new Error("Only image files are allowed!"));
+  }
+  cb(null, true);
+};
 require("./util/dbConnect");
 const port = 3000;
 const app = express();
@@ -35,7 +53,11 @@ const store = new MongoDBStore({
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
+);
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "data")));
 
 app.use(
   session({
@@ -71,7 +93,13 @@ app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
+app.use(errorController.get500);
 app.use(errorController.get404);
+
+app.use((err, req, res, next) => {
+  console.log(err);
+  return res.redirect("/500");
+});
 
 app.listen(port, () => {
   console.log(`Listening on Port:${port}`);

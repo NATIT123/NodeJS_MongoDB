@@ -72,6 +72,9 @@ exports.postLogin = async (req, res, next) => {
       res.redirect("/");
     });
   } catch (err) {
+    // const error = new Error(err);
+    // error.httpStatusCode = 500;
+    // return next(error);
     res.redirect("/login");
     console.log(err);
   }
@@ -96,7 +99,7 @@ exports.getSignup = (req, res, next) => {
     pageTitle: "Signup",
     isAuthenticated: false,
     errorMessage: message,
-    validationErrors: null,
+    validationErrors: [],
     oldInput: {
       email: "",
       password: "",
