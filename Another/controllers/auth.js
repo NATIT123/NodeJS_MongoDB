@@ -4,6 +4,8 @@ const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 require("dotenv").config();
 
+const { validationResult } = require("express-validator");
+
 const transporter = nodemailer.createTransport({
   service: "gmail",
   host: process.env.EMAIL_HOST,
@@ -26,6 +28,10 @@ exports.getLogin = (req, res, next) => {
     pageTitle: "Login",
     isAuthenticated: false,
     errorMessage: message,
+    oldInput: {
+      email: "",
+      password: "",
+    },
   });
 };
 
@@ -35,14 +41,29 @@ exports.postLogin = async (req, res, next) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email: email });
     if (!user) {
-      req.flash("errors", "Invalid email or password.");
-      return res.redirect("/login");
+      return res.status(422).render("auth/login", {
+        path: "/login",
+        pageTitle: "Login",
+        errorMessage: "Invalid email or password.",
+        oldInput: {
+          email,
+          password,
+        },
+      });
     }
 
     const check = await bcrypt.compare(password, user.password);
     if (!check) {
-      req.flash("errors", "Invalid email or password.");
-      return res.redirect("/login");
+      return res.status(422).render("auth/login", {
+        path: "/login",
+        pageTitle: "Login",
+        errorMessage: "Invalid email or password.",
+        oldInput: {
+          email,
+          password,
+        },
+        validationErrors: errors.array(),
+      });
     }
     req.session.isLoggedIn = true;
     req.session.user = user;
@@ -75,6 +96,12 @@ exports.getSignup = (req, res, next) => {
     pageTitle: "Signup",
     isAuthenticated: false,
     errorMessage: message,
+    validationErrors: null,
+    oldInput: {
+      email: "",
+      password: "",
+      name: "",
+    },
   });
 };
 
@@ -82,6 +109,21 @@ exports.postSignUp = async (req, res, next) => {
   try {
     const { name, email, password, confirmPassword } = req.body;
     const user = await User.findOne({ email: email });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.log(errors.array());
+      return res.status(422).render("auth/signup", {
+        path: "/signup",
+        pageTitle: "Signup",
+        errorMessage: errors.array()[0].msg,
+        oldInput: {
+          email,
+          password,
+          name,
+        },
+        validationErrors: errors.array(),
+      });
+    }
     if (user) {
       req.flash("errors", "Email has been used");
       return res.redirect("/signup");
