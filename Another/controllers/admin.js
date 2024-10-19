@@ -1,6 +1,7 @@
 const { ValidationError } = require("sequelize");
 const Product = require("../models/product");
 const mongoose = require("mongoose");
+const fileHelper = require("../util/file");
 exports.getAddProduct = (req, res, next) => {
   let message = req.flash("errors");
   if (message.length > 0) {
@@ -106,6 +107,7 @@ exports.postEditProduct = (req, res, next) => {
         return res.redirect("/");
       }
       if (image) {
+        fileHelper.deleteFile(product.imageUrl);
         product.imageUrl = image.filename;
       }
       product.title = updatedTitle;
@@ -137,8 +139,17 @@ exports.getProducts = (req, res, next) => {
     .catch((err) => console.log(err));
 };
 
-exports.postDeleteProduct = (req, res, next) => {
+exports.postDeleteProduct = async (req, res, next) => {
   const prodId = req.body.productId;
+  try {
+    const product = await Product.findById(prodId);
+    if (!product) {
+      return next(new Error("Product not found."));
+    }
+    fileHelper.deleteFile(product.imageUrl);
+  } catch (err) {
+    next(err);
+  }
   Product.deleteOne({ _id: prodId, userId: req.user._id })
     .then(() => {
       console.log("DESTROYED PRODUCT");

@@ -57,7 +57,6 @@ app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
 );
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.static(path.join(__dirname, "data")));
 
 app.use(
   session({
