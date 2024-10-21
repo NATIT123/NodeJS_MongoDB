@@ -1,8 +1,122 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="8ca974c1-d9b5-42df-ad25-e474fd4e8f3a" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-backend-solution/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/public/favicon.ico" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/public/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/public/manifest.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/App.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/App.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Backdrop/Backdrop.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Backdrop/Backdrop.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Button/Button.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Button/Button.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/ErrorHandler/ErrorHandler.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Feed/FeedEdit/FeedEdit.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Feed/Post/Post.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Feed/Post/Post.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Form/Input/FilePicker.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Form/Input/Input.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Form/Input/Input.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Image/Avatar.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Image/Avatar.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Image/Image.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Image/Image.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Layout/Layout.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Layout/Layout.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Loader/Loader.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Loader/Loader.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Logo/Logo.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Logo/Logo.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Modal/Modal.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Modal/Modal.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Navigation/MainNavigation/MainNavigation.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Navigation/MainNavigation/MainNavigation.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Navigation/MobileNavigation/MobileNavigation.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Navigation/MobileNavigation/MobileNavigation.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Navigation/MobileToggle/MobileToggle.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Navigation/MobileToggle/MobileToggle.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Navigation/NavigationItems/NavigationItems.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Navigation/NavigationItems/NavigationItems.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Paginator/Paginator.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Paginator/Paginator.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Toolbar/Toolbar.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/components/Toolbar/Toolbar.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/index.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/pages/Auth/Auth.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/pages/Auth/Auth.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/pages/Auth/Login.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/pages/Auth/Signup.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/pages/Feed/Feed.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/pages/Feed/Feed.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/pages/Feed/SinglePost/SinglePost.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/pages/Feed/SinglePost/SinglePost.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/util/image.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assignment-frontend-solution/src/util/validators.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deno-03-basic-deno-server/deno/.deno_plugins/deno_mongo_8834e91d4661df9888ff57240f3b8a4c.dylib" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deno-03-basic-deno-server/deno/.deno_plugins/deno_mongo_eba1b6cad1c0aae92825a91f5e45edba.dll" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deno-03-basic-deno-server/deno/app.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deno-03-basic-deno-server/deno/helpers/db_client.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deno-03-basic-deno-server/deno/routes/todos.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deno-03-basic-deno-server/frontend-app/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deno-03-basic-deno-server/frontend-app/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deno-03-basic-deno-server/frontend-app/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deno-03-basic-deno-server/frontend-app/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deno-03-basic-deno-server/frontend-app/public/favicon.ico" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deno-03-basic-deno-server/frontend-app/public/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deno-03-basic-deno-server/frontend-app/public/logo192.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deno-03-basic-deno-server/frontend-app/public/logo512.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deno-03-basic-deno-server/frontend-app/public/manifest.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deno-03-basic-deno-server/frontend-app/public/robots.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deno-03-basic-deno-server/frontend-app/src/App.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deno-03-basic-deno-server/frontend-app/src/components/Todos.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deno-03-basic-deno-server/frontend-app/src/components/Todos.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deno-03-basic-deno-server/frontend-app/src/index.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deno-03-basic-deno-server/frontend-app/src/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assignment-backend-solution/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/assignment-backend-solution/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assignment-backend-solution/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/assignment-backend-solution/package.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2nfAcGpG4nZTuyVRUPzf6Nvu5H2" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;com.poratu.idea.plugins.tomcat.setting.TomcatServersConfigurable&quot;
   }
 }</component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8ca974c1-d9b5-42df-ad25-e474fd4e8f3a" name="Changes" comment="" />
+      <created>1729353835248</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1729353835248</updated>
+      <workItem from="1729353839417" duration="3000" />
+      <workItem from="1729517764655" duration="1000" />
+    </task>
+    <servers />
+  </component>
 </project>
